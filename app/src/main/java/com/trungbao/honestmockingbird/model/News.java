@@ -1,5 +1,6 @@
 package com.trungbao.honestmockingbird.model;
 
+import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.Random;
 import java.util.UUID;
@@ -9,7 +10,7 @@ import java.util.UUID;
  */
 
 public class News {
-    private UUID mId;
+    private String mId;
     private String mTitle;
     private String mUrl;
     private Date mPubDate;
@@ -20,7 +21,7 @@ public class News {
     private int mHoldVoteCount;
 
     public News(String title, String url, Date pubDate, String pubSource, String fingerprint, int buyVoteCount, int sellVoteCount, int holdVoteCount) {
-        mId = UUID.randomUUID();
+        mId = UUID.randomUUID().toString();
         mTitle = title;
         mUrl = url;
         mPubDate = pubDate;
@@ -32,7 +33,7 @@ public class News {
     }
 
     public News() {
-        mId = UUID.randomUUID();
+        mId = UUID.randomUUID().toString();
         mTitle = "Title " + mId;
         mUrl = "Url " + mId;
         mPubDate = new Date();
@@ -43,11 +44,11 @@ public class News {
         mHoldVoteCount = new Random().nextInt(1000);
     }
 
-    public UUID getId() {
+    public String getId() {
         return mId;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         mId = id;
     }
 
@@ -115,6 +116,29 @@ public class News {
         mHoldVoteCount = holdVoteCount;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        String newLine = System.getProperty("line.separator");
 
+        result.append( this.getClass().getName() );
+        result.append( " Object {" );
+        result.append(newLine);
+        Field[] fields = this.getClass().getDeclaredFields();
 
+        for ( Field field : fields  ) {
+            result.append("  ");
+            try {
+                result.append( field.getName() );
+                result.append(": ");
+                result.append( field.get(this) );
+            } catch ( IllegalAccessException ex ) {
+                System.out.println(ex);
+            }
+            result.append(newLine);
+        }
+        result.append("}");
+
+        return result.toString();
+    }
 }

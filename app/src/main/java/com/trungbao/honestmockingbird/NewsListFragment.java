@@ -1,11 +1,16 @@
 package com.trungbao.honestmockingbird;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +19,11 @@ import android.widget.TextView;
 import com.trungbao.honestmockingbird.model.News;
 import com.trungbao.honestmockingbird.model.NewsLab;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Created by baotrungtn on 9/17/17.
@@ -22,6 +31,7 @@ import java.util.List;
 
 
 public class NewsListFragment extends Fragment {
+    private static final String TAG = "NewsListFragment";
 
     private RecyclerView mNewsRecyclerView;
     private NewsAdapter mAdapter;
@@ -31,6 +41,23 @@ public class NewsListFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+//        setRetainInstance(true);
+
+        // from Local Time to UTC
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+        c.add(Calendar.DATE, 2);  // number of days to add
+
+        new FetchDataTask().execute(
+                this.getContext(),
+                sdf.format(c.getTime()),
+                20
+        );
+
+        Log.i(TAG, "NewsListFragment created");
     }
 
     @Nullable
@@ -43,6 +70,8 @@ public class NewsListFragment extends Fragment {
 
         updateUI();
 
+        Log.i(TAG, "NewsListFragment View created");
+
         return view;
     }
 
@@ -50,7 +79,6 @@ public class NewsListFragment extends Fragment {
     public void onResume() {
         super.onResume();
         updateUI();
-
     }
 
     private void updateUI() {
@@ -64,6 +92,12 @@ public class NewsListFragment extends Fragment {
             mAdapter.notifyDataSetChanged();
         }
 
+    }
+
+    private void setupAdapter() {
+        if (isAdded()) {
+            mNewsRecyclerView.setAdapter(new NewsAdapter(NewsLab.get(getActivity()).getNewsList()));
+        }
     }
 
     private class NewsAdapter extends RecyclerView.Adapter<NewsHolder>{
@@ -117,7 +151,29 @@ public class NewsListFragment extends Fragment {
 
         @Override
         public void onClick(View view) {
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(mNews.getUrl()));
+            i = Intent.createChooser(i, getString(R.string.open_url));
+            startActivity(i);
+        }
+    }
 
+    private class FetchDataTask extends AsyncTask<Object,Void,Void> {
+
+        @Override
+        protected Void doInBackground(Object... params) {
+            Context context = (Context) params[0];
+            String beforeDateStr = (String) params[1];
+            int newsCount = (int) params[2];
+
+            NewsLab.get(context).fetchNews(beforeDateStr, newsCount);
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            setupAdapter();
         }
     }
 }

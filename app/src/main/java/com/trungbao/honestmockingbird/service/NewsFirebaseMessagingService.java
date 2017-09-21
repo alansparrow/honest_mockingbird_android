@@ -2,6 +2,8 @@ package com.trungbao.honestmockingbird.service;
 
 import android.util.Log;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -10,12 +12,14 @@ import com.google.firebase.messaging.RemoteMessage;
  */
 
 public class NewsFirebaseMessagingService extends FirebaseMessagingService{
-    private static final String TAG = "FCM Service";
+    private static final String TAG = "FirebaseFCMService";
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
+        Log.d(TAG, "My Token: " + FirebaseInstanceId.getInstance().getToken());
         Log.d(TAG, "From: " + remoteMessage.getFrom());
         Log.d(TAG, "Body: " + remoteMessage.getNotification().getBody());
+
     }
 }

@@ -6,12 +6,15 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 /**
  * Created by baotrungtn on 9/17/17.
  */
 
 public abstract class SingleFragmentActivity extends AppCompatActivity {
+    private static final String TAG = "SingleFragmentActivity";
+
     protected abstract Fragment createFragment();
 
 
@@ -28,6 +31,7 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
             fm.beginTransaction()
                     .add(R.id.fragment_container, fragment)
                     .commit();
+            Log.i(TAG, "SingleFragmentActivity run commit fragment");
         }
     }
 }

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Honest Mockingbird</string>
+    <string name="open_url">Open link</string>
 </resources>
