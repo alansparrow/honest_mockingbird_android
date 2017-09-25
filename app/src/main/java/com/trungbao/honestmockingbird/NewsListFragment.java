@@ -54,7 +54,8 @@ public class NewsListFragment extends Fragment {
         new FetchDataTask().execute(
                 this.getContext(),
                 sdf.format(c.getTime()),
-                20
+                20,
+                0
         );
 
         Log.i(TAG, "NewsListFragment created");
@@ -67,6 +68,7 @@ public class NewsListFragment extends Fragment {
 
         mNewsRecyclerView = (RecyclerView) view.findViewById(R.id.news_recycler_view);
         mNewsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mNewsRecyclerView.addOnScrollListener(new OnVerticalScrollListener());
 
         updateUI();
 
@@ -97,6 +99,16 @@ public class NewsListFragment extends Fragment {
     private void setupAdapter() {
         if (isAdded()) {
             mNewsRecyclerView.setAdapter(new NewsAdapter(NewsLab.get(getActivity()).getNewsList()));
+        }
+    }
+
+    private void notifyDataSetChange() {
+        if (isAdded()) {
+            if (mNewsRecyclerView.getAdapter() == null) {
+                mNewsRecyclerView.setAdapter(new NewsAdapter(NewsLab.get(getActivity()).getNewsList()));
+            } else {
+                mNewsRecyclerView.getAdapter().notifyDataSetChanged();
+            }
         }
     }
 
@@ -147,33 +159,85 @@ public class NewsListFragment extends Fragment {
             mTitleTextView.setText(mNews.getTitle());
             mPubSourceTextView.setText(mNews.getPubSource());
             mPubTimeTextView.setText(mNews.getPubDate().toString());
+
+            mTitleTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(mNews.getUrl()));
+                    i = Intent.createChooser(i, getString(R.string.open_url));
+                    startActivity(i);
+                }
+            });
         }
 
         @Override
         public void onClick(View view) {
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(mNews.getUrl()));
-            i = Intent.createChooser(i, getString(R.string.open_url));
-            startActivity(i);
+
         }
     }
 
-    private class FetchDataTask extends AsyncTask<Object,Void,Void> {
+    private class OnVerticalScrollListener extends RecyclerView.OnScrollListener {
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            if (!recyclerView.canScrollVertically(1)) {
+                // from Local Time to UTC
+                int lastItemPos = NewsLab.get(getActivity()).getNewsList().size() - 1;
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+                String beforeDateStr = sdf.format(
+                        NewsLab.get(getContext()).getNewsList().get(lastItemPos).getPubDate()
+                );
+
+                new FetchDataTask().execute(
+                        getContext(),
+                        beforeDateStr,
+                        20,
+                        1
+                );
+
+            } else if (!recyclerView.canScrollVertically(-1)) {
+                // from Local Time to UTC
+//                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+//
+//                Calendar c = Calendar.getInstance();
+//                c.setTime(new Date());
+//                c.add(Calendar.DATE, 2);  // number of days to add
+//
+//                new FetchDataTask().execute(
+//                        getContext(),
+//                        sdf.format(c.getTime()),
+//                        20,
+//                        0
+//                );
+            }
+            Log.i(TAG, dx + "   " + dy + " aa  " + recyclerView.canScrollVertically(1));
+            Log.i(TAG, dx + "   " + dy + " bb  " + recyclerView.canScrollVertically(-1));
+        }
+    }
+
+    private class FetchDataTask extends AsyncTask<Object,Void, Integer> {
 
         @Override
-        protected Void doInBackground(Object... params) {
+        protected Integer doInBackground(Object... params) {
             Context context = (Context) params[0];
             String beforeDateStr = (String) params[1];
             int newsCount = (int) params[2];
+            int resultType = (int) params[3];
 
             NewsLab.get(context).fetchNews(beforeDateStr, newsCount);
 
-            return null;
+            return resultType;
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-            setupAdapter();
+        protected void onPostExecute(Integer resultType) {
+            if (resultType == 0) {
+                setupAdapter();
+            } else if (resultType == 1) {
+                notifyDataSetChange();
+            }
         }
     }
 }
