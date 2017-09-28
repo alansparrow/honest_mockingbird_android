@@ -4,6 +4,8 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
+import com.trungbao.honestmockingbird.SharedInfo;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -74,6 +76,7 @@ public class NewsLab {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             try {
+                connection.connect();
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 InputStream in = connection.getInputStream();
 
@@ -129,6 +132,7 @@ public class NewsLab {
                 news.setSellVoteCount(itemJsonObject.getInt("sell_vote_count"));
                 news.setHoldVoteCount(itemJsonObject.getInt("hold_vote_count"));
                 news.setPubDate(parseToLocalTime(itemJsonObject.getString("pub_date")));
+                news.setMyVote(SharedInfo.getUserVote(news.getId()));
 
 //            Log.i(TAG, news.toString());
                 items.add(news);

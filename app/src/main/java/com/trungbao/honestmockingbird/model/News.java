@@ -1,5 +1,7 @@
 package com.trungbao.honestmockingbird.model;
 
+import com.trungbao.honestmockingbird.SharedInfo;
+
 import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.Random;
@@ -19,6 +21,7 @@ public class News {
     private int mBuyVoteCount;
     private int mSellVoteCount;
     private int mHoldVoteCount;
+    private String mMyVote;
 
     public News(String title, String url, Date pubDate, String pubSource, String fingerprint, int buyVoteCount, int sellVoteCount, int holdVoteCount) {
         mId = UUID.randomUUID().toString();
@@ -30,6 +33,7 @@ public class News {
         mBuyVoteCount = buyVoteCount;
         mSellVoteCount = sellVoteCount;
         mHoldVoteCount = holdVoteCount;
+        mMyVote = SharedInfo.NEUTRAL_VOTE;
     }
 
     public News() {
@@ -114,6 +118,90 @@ public class News {
 
     public void setHoldVoteCount(int holdVoteCount) {
         mHoldVoteCount = holdVoteCount;
+    }
+
+    public String getMyVote() {
+        return mMyVote;
+    }
+
+    public void setMyVote(String myVote) {
+        if (myVote != null && mMyVote != null) {
+            switch (mMyVote) {
+                case SharedInfo.NEUTRAL_VOTE:
+                    switch (myVote) {
+                        case SharedInfo.NEUTRAL_VOTE:
+                            break;
+                        case SharedInfo.HOLD_VOTE:
+                            mHoldVoteCount += 1;
+                            break;
+                        case SharedInfo.BUY_VOTE:
+                            mBuyVoteCount += 1;
+                            break;
+                        case SharedInfo.SELL_VOTE:
+                            mSellVoteCount += 1;
+                            break;
+                    }
+                    break;
+                case SharedInfo.HOLD_VOTE:
+                    switch (myVote) {
+                        case SharedInfo.NEUTRAL_VOTE:
+                            mHoldVoteCount -= 1;
+                            break;
+                        case SharedInfo.HOLD_VOTE:
+                            break;
+                        case SharedInfo.BUY_VOTE:
+                            mHoldVoteCount -= 1;
+                            mBuyVoteCount += 1;
+                            break;
+                        case SharedInfo.SELL_VOTE:
+                            mHoldVoteCount -= 1;
+                            mSellVoteCount += 1;
+                            break;
+                    }
+                    break;
+                case SharedInfo.BUY_VOTE:
+                    switch (myVote) {
+                        case SharedInfo.NEUTRAL_VOTE:
+                            mBuyVoteCount -= 1;
+                            break;
+                        case SharedInfo.HOLD_VOTE:
+                            mBuyVoteCount -= 1;
+                            mHoldVoteCount += 1;
+                            break;
+                        case SharedInfo.BUY_VOTE:
+                            break;
+                        case SharedInfo.SELL_VOTE:
+                            mBuyVoteCount -= 1;
+                            mSellVoteCount += 1;
+                            break;
+                    }
+                    break;
+                case SharedInfo.SELL_VOTE:
+                    switch (myVote) {
+                        case SharedInfo.NEUTRAL_VOTE:
+                            mSellVoteCount -= 1;
+                            break;
+                        case SharedInfo.HOLD_VOTE:
+                            mSellVoteCount -= 1;
+                            mHoldVoteCount += 1;
+                            break;
+                        case SharedInfo.BUY_VOTE:
+                            mSellVoteCount -= 1;
+                            mBuyVoteCount += 1;
+                            break;
+                        case SharedInfo.SELL_VOTE:
+                            break;
+                    }
+                    break;
+            }
+        }
+
+        mHoldVoteCount = (mHoldVoteCount < 0) ? 0 : mHoldVoteCount;
+        mBuyVoteCount = (mBuyVoteCount < 0) ? 0 : mBuyVoteCount;
+        mSellVoteCount = (mSellVoteCount < 0) ? 0 : mSellVoteCount;
+
+        mMyVote = myVote;
+        SharedInfo.setUserVote(getId(), myVote);
     }
 
     @Override
