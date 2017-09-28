@@ -4,4 +4,6 @@
     <string name="hold">Hold</string>
     <string name="buy">Buy</string>
     <string name="sell">Sell</string>
+    <string name="fact">Fact</string>
+    <string name="opinion">Opinion</string>
 </resources>
