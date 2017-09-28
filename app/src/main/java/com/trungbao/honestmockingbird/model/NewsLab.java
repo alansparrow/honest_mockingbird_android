@@ -132,7 +132,7 @@ public class NewsLab {
                 news.setSellVoteCount(itemJsonObject.getInt("sell_vote_count"));
                 news.setHoldVoteCount(itemJsonObject.getInt("hold_vote_count"));
                 news.setPubDate(parseToLocalTime(itemJsonObject.getString("pub_date")));
-                news.setMyVote(SharedInfo.getUserVote(news.getId()));
+                news.setMyVote(SharedInfo.getUserVote(news, true));
 
 //            Log.i(TAG, news.toString());
                 items.add(news);

@@ -2,6 +2,8 @@ package com.trungbao.honestmockingbird;
 
 import android.content.SharedPreferences;
 
+import com.trungbao.honestmockingbird.model.News;
+
 import static android.content.Context.MODE_PRIVATE;
 
 /**
@@ -31,8 +33,12 @@ public class SharedInfo {
         mSharedPrefs.edit().putString(USER_VOTE + newsId, userVote).commit();
     }
 
-    public static String getUserVote(String newsId) {
-        return mSharedPrefs.getString(USER_VOTE + newsId, NEUTRAL_VOTE);
+    public static String getUserVote(News news, boolean canBeNull) {
+        if (canBeNull == true) {
+            return mSharedPrefs.getString(USER_VOTE + news.getId(), null);
+        } else {
+            return mSharedPrefs.getString(USER_VOTE + news.getId(), NEUTRAL_VOTE);
+        }
     }
 
     public static String getUserToken() {

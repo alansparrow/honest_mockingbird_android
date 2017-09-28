@@ -132,6 +132,7 @@ public class NewsListFragment extends Fragment {
 
     private class NewsHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private News mNews;
+        private String mMyVote;
 
         private TextView mTitleTextView;
         private TextView mPubSourceTextView;
@@ -169,31 +170,38 @@ public class NewsListFragment extends Fragment {
 
         public void bind(News n) {
             mNews = n;
+
             mTitleTextView.setText(mNews.getTitle());
             mPubSourceTextView.setText(mNews.getPubSource());
             mPubTimeTextView.setText(mNews.getPubDate().toString());
-
-            mHoldVoteCountTextView.setText(mNews.getHoldVoteCount() + "");
-            mBuyVoteCountTextView.setText(mNews.getBuyVoteCount() + "");
-            mSellVoteCountTextView.setText(mNews.getSellVoteCount() + "");
 
             // Set vote button, should refactor (create sub class of view)
             mHoldTextView.setTypeface(null, Typeface.NORMAL);
             mSellTextView.setTypeface(null, Typeface.NORMAL);
             mBuyTextView.setTypeface(null, Typeface.NORMAL);
 
-            switch (mNews.getMyVote()) {
-                case SharedInfo.HOLD_VOTE:
-                    mHoldTextView.setTypeface(null, Typeface.BOLD);
-                    break;
-                case SharedInfo.BUY_VOTE:
-                    mBuyTextView.setTypeface(null, Typeface.BOLD);
-                    break;
-                case SharedInfo.SELL_VOTE:
-                    mSellTextView.setTypeface(null, Typeface.BOLD);
-                    break;
-                case SharedInfo.NEUTRAL_VOTE:
-                    break;
+            // Only show when user voted
+            if (mNews.getMyVote() != null) {
+                mHoldVoteCountTextView.setText(mNews.getHoldVoteCount() + "");
+                mBuyVoteCountTextView.setText(mNews.getBuyVoteCount() + "");
+                mSellVoteCountTextView.setText(mNews.getSellVoteCount() + "");
+                switch (mNews.getMyVote()) {
+                    case SharedInfo.HOLD_VOTE:
+                        mHoldTextView.setTypeface(null, Typeface.BOLD);
+                        break;
+                    case SharedInfo.BUY_VOTE:
+                        mBuyTextView.setTypeface(null, Typeface.BOLD);
+                        break;
+                    case SharedInfo.SELL_VOTE:
+                        mSellTextView.setTypeface(null, Typeface.BOLD);
+                        break;
+                    case SharedInfo.NEUTRAL_VOTE:
+                        break;
+                }
+            } else {
+                mHoldVoteCountTextView.setText("?");
+                mBuyVoteCountTextView.setText("?");
+                mSellVoteCountTextView.setText("?");
             }
 
             mTitleTextView.setOnClickListener(new View.OnClickListener() {
@@ -210,10 +218,10 @@ public class NewsListFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     new VoteTask().execute(mNews, SharedInfo.HOLD_VOTE);
-                    if (mNews.getMyVote().equals(SharedInfo.HOLD_VOTE)) {
-                        mNews.setMyVote(SharedInfo.NEUTRAL_VOTE);
+                    if (mNews.getMyVote()!= null && mNews.getMyVote().equals(SharedInfo.HOLD_VOTE)) {
+                        mNews.vote(SharedInfo.NEUTRAL_VOTE);
                     } else {
-                        mNews.setMyVote(SharedInfo.HOLD_VOTE);
+                        mNews.vote(SharedInfo.HOLD_VOTE);
                     }
                     Log.i(TAG, "Vote changed: " + mNews.getId() + "   " + mNews.getMyVote());
                     updateUI();
@@ -224,10 +232,10 @@ public class NewsListFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     new VoteTask().execute(mNews, SharedInfo.BUY_VOTE);
-                    if (mNews.getMyVote().equals(SharedInfo.BUY_VOTE)) {
-                        mNews.setMyVote(SharedInfo.NEUTRAL_VOTE);
+                    if (mNews.getMyVote()!= null && mNews.getMyVote().equals(SharedInfo.BUY_VOTE)) {
+                        mNews.vote(SharedInfo.NEUTRAL_VOTE);
                     } else {
-                        mNews.setMyVote(SharedInfo.BUY_VOTE);
+                        mNews.vote(SharedInfo.BUY_VOTE);
                     }
                     Log.i(TAG, "Vote changed: " + mNews.getId() + "   " + mNews.getMyVote());
                     updateUI();
@@ -238,10 +246,10 @@ public class NewsListFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     new VoteTask().execute(mNews, SharedInfo.SELL_VOTE);
-                    if (mNews.getMyVote().equals(SharedInfo.SELL_VOTE)) {
-                        mNews.setMyVote(SharedInfo.NEUTRAL_VOTE);
+                    if (mNews.getMyVote()!= null && mNews.getMyVote().equals(SharedInfo.SELL_VOTE)) {
+                        mNews.vote(SharedInfo.NEUTRAL_VOTE);
                     } else {
-                        mNews.setMyVote(SharedInfo.SELL_VOTE);
+                        mNews.vote(SharedInfo.SELL_VOTE);
                     }
                     Log.i(TAG, "Vote changed: " + mNews.getId() + "   " + mNews.getMyVote());
                     updateUI();

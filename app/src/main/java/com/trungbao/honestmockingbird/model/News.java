@@ -125,7 +125,24 @@ public class News {
     }
 
     public void setMyVote(String myVote) {
-        if (myVote != null && mMyVote != null) {
+        mMyVote = myVote;
+    }
+
+    public void vote(String myVote) {
+
+        if (mMyVote == null && myVote != null) {
+            switch (myVote) {
+                case SharedInfo.HOLD_VOTE:
+                    mHoldVoteCount += 1;
+                    break;
+                case SharedInfo.BUY_VOTE:
+                    mBuyVoteCount += 1;
+                    break;
+                case SharedInfo.SELL_VOTE:
+                    mSellVoteCount += 1;
+                    break;
+            }
+        } else if (mMyVote != null && myVote != null) {
             switch (mMyVote) {
                 case SharedInfo.NEUTRAL_VOTE:
                     switch (myVote) {
