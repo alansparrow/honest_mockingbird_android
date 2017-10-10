@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,6 +39,10 @@ public class NewsLab {
             sNewsLab = new NewsLab(context);
         }
         return sNewsLab;
+    }
+
+    public static void refresh() {
+        sNewsLab = null;
     }
 
     private NewsLab(Context context) {
@@ -132,9 +135,11 @@ public class NewsLab {
                 news.setSellVoteCount(itemJsonObject.getInt("sell_vote_count"));
                 news.setHoldVoteCount(itemJsonObject.getInt("hold_vote_count"));
                 news.setPubDate(parseToLocalTime(itemJsonObject.getString("pub_date")));
-                news.setMyVote(SharedInfo.getUserVote(news, true));
+                news.setTradeVote(SharedInfo.getUserTradeVoteRef(news, true));
+                news.setFactVoteCount(itemJsonObject.getInt("fact_vote_count"));
+                news.setOpinionVoteCount(itemJsonObject.getInt("opinion_vote_count"));
+                news.setFactOpinionVote(SharedInfo.getUserFactopinionVoteRef(news, true));
 
-//            Log.i(TAG, news.toString());
                 items.add(news);
             }
         }

@@ -6,4 +6,5 @@
     <string name="sell">Sell</string>
     <string name="fact">Fact</string>
     <string name="opinion">Opinion</string>
+    <string name="menu_refresh">Refresh</string>
 </resources>

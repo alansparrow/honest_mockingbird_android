@@ -21,9 +21,14 @@ public class News {
     private int mBuyVoteCount;
     private int mSellVoteCount;
     private int mHoldVoteCount;
-    private String mMyVote;
+    private int mFactVoteCount;
+    private int mOpinionVoteCount;
+    private String mTradeVote;
+    private String mFactOpinionVote;
 
-    public News(String title, String url, Date pubDate, String pubSource, String fingerprint, int buyVoteCount, int sellVoteCount, int holdVoteCount) {
+    public News(String title, String url, Date pubDate, String pubSource, String fingerprint,
+                int buyVoteCount, int sellVoteCount, int holdVoteCount,
+                int factVoteCount, int opinionVoteCount) {
         mId = UUID.randomUUID().toString();
         mTitle = title;
         mUrl = url;
@@ -33,7 +38,10 @@ public class News {
         mBuyVoteCount = buyVoteCount;
         mSellVoteCount = sellVoteCount;
         mHoldVoteCount = holdVoteCount;
-        mMyVote = SharedInfo.NEUTRAL_VOTE;
+        mFactVoteCount = factVoteCount;
+        mOpinionVoteCount = opinionVoteCount;
+        mTradeVote = SharedInfo.NEUTRAL_VOTE;
+        mFactOpinionVote = SharedInfo.NEUTRAL_VOTE;
     }
 
     public News() {
@@ -46,6 +54,8 @@ public class News {
         mBuyVoteCount = new Random().nextInt(1000);
         mSellVoteCount = new Random().nextInt(1000);
         mHoldVoteCount = new Random().nextInt(1000);
+        mFactVoteCount = new Random().nextInt(1000);
+        mOpinionVoteCount = new Random().nextInt(1000);
     }
 
     public String getId() {
@@ -120,17 +130,102 @@ public class News {
         mHoldVoteCount = holdVoteCount;
     }
 
-    public String getMyVote() {
-        return mMyVote;
+    public int getFactVoteCount() {
+        return mFactVoteCount;
     }
 
-    public void setMyVote(String myVote) {
-        mMyVote = myVote;
+    public void setFactVoteCount(int factVoteCount) {
+        mFactVoteCount = factVoteCount;
     }
 
-    public void vote(String myVote) {
+    public int getOpinionVoteCount() {
+        return mOpinionVoteCount;
+    }
 
-        if (mMyVote == null && myVote != null) {
+    public void setOpinionVoteCount(int opinionVoteCount) {
+        mOpinionVoteCount = opinionVoteCount;
+    }
+
+    public String getFactOpinionVote() {
+        return mFactOpinionVote;
+    }
+
+    public void setFactOpinionVote(String factOpinionVote) {
+        mFactOpinionVote = factOpinionVote;
+    }
+
+    public String getTradeVote() {
+        return mTradeVote;
+    }
+
+    public void setTradeVote(String tradeVote) {
+        mTradeVote = tradeVote;
+    }
+
+    public void voteFactOpinion(String myVote) {
+        if (mFactOpinionVote == null && myVote != null) {
+            switch (myVote) {
+                case SharedInfo.FACT_VOTE:
+                    mFactVoteCount += 1;
+                    break;
+                case SharedInfo.OPINION_VOTE:
+                    mOpinionVoteCount += 1;
+                    break;
+            }
+        } else if (mFactOpinionVote != null && myVote != null) {
+            switch (mFactOpinionVote) {
+                case SharedInfo.NEUTRAL_VOTE:
+                    switch (myVote) {
+                        case SharedInfo.NEUTRAL_VOTE:
+                            break;
+                        case SharedInfo.FACT_VOTE:
+                            mFactVoteCount += 1;
+                            break;
+                        case SharedInfo.OPINION_VOTE:
+                            mOpinionVoteCount += 1;
+                            break;
+
+                    }
+                    break;
+                case SharedInfo.FACT_VOTE:
+                    switch (myVote) {
+                        case SharedInfo.NEUTRAL_VOTE:
+                            mFactVoteCount -= 1;
+                            break;
+                        case SharedInfo.FACT_VOTE:  // refactoring here -1
+                            break;
+                        case SharedInfo.OPINION_VOTE:
+                            mFactVoteCount -= 1;
+                            mOpinionVoteCount += 1;
+                            break;
+                    }
+                    break;
+                case SharedInfo.OPINION_VOTE:
+                    switch (myVote) {
+                        case SharedInfo.NEUTRAL_VOTE:
+                            mOpinionVoteCount -= 1;
+                            break;
+                        case SharedInfo.OPINION_VOTE:  // refactoring here -1
+                            break;
+                        case SharedInfo.FACT_VOTE:
+                            mOpinionVoteCount -= 1;
+                            mFactVoteCount += 1;
+                            break;
+                    }
+                    break;
+            }
+        }
+
+        mFactVoteCount = (mFactVoteCount < 0) ? 0 : mFactVoteCount;
+        mOpinionVoteCount = (mOpinionVoteCount < 0) ? 0 : mOpinionVoteCount;
+
+        mFactOpinionVote = myVote;
+        SharedInfo.setUserFactopinionVoteRef(this, myVote);
+    }
+
+    public void voteTrade(String myVote) {
+
+        if (mTradeVote == null && myVote != null) {
             switch (myVote) {
                 case SharedInfo.HOLD_VOTE:
                     mHoldVoteCount += 1;
@@ -142,8 +237,8 @@ public class News {
                     mSellVoteCount += 1;
                     break;
             }
-        } else if (mMyVote != null && myVote != null) {
-            switch (mMyVote) {
+        } else if (mTradeVote != null && myVote != null) {
+            switch (mTradeVote) {
                 case SharedInfo.NEUTRAL_VOTE:
                     switch (myVote) {
                         case SharedInfo.NEUTRAL_VOTE:
@@ -217,8 +312,8 @@ public class News {
         mBuyVoteCount = (mBuyVoteCount < 0) ? 0 : mBuyVoteCount;
         mSellVoteCount = (mSellVoteCount < 0) ? 0 : mSellVoteCount;
 
-        mMyVote = myVote;
-        SharedInfo.setUserVote(getId(), myVote);
+        mTradeVote = myVote;
+        SharedInfo.setUserTradeVoteRef(this, myVote);
     }
 
     @Override

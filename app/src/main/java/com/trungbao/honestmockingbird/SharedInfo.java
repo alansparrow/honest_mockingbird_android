@@ -4,18 +4,19 @@ import android.content.SharedPreferences;
 
 import com.trungbao.honestmockingbird.model.News;
 
-import static android.content.Context.MODE_PRIVATE;
-
 /**
  * Created by baotrungtn on 9/27/17.
  */
 
 public class SharedInfo {
     public static final String USER_TOKEN = "USER_TOKEN";
-    public static final String USER_VOTE = "USER_VOTE";
+    public static final String USER_TRADE_VOTE = "USER_TRADE_VOTE";
+    public static final String USER_FACTOPINION_VOTE = "USER_FACTOPINION_VOTE";
     public static final String HOLD_VOTE = "HOLD";
     public static final String BUY_VOTE = "BUY";
     public static final String SELL_VOTE = "SELL";
+    public static final String FACT_VOTE = "FACT";
+    public static final String OPINION_VOTE = "OPINION";
     public static final String NEUTRAL_VOTE = "NEUTRAL";
 
     private static SharedPreferences mSharedPrefs = null;
@@ -29,15 +30,27 @@ public class SharedInfo {
         SharedInfo.mSharedPrefs = mSharedPrefs;
     }
 
-    public static void setUserVote(String newsId, String userVote) {
-        mSharedPrefs.edit().putString(USER_VOTE + newsId, userVote).commit();
+    public static void setUserFactopinionVoteRef(News news, String userVote) {
+        mSharedPrefs.edit().putString(USER_FACTOPINION_VOTE + news.getId(), userVote).commit();
     }
 
-    public static String getUserVote(News news, boolean canBeNull) {
+    public static String getUserFactopinionVoteRef(News news, boolean canBeNull) {
         if (canBeNull == true) {
-            return mSharedPrefs.getString(USER_VOTE + news.getId(), null);
+            return mSharedPrefs.getString(USER_FACTOPINION_VOTE + news.getId(), null);
         } else {
-            return mSharedPrefs.getString(USER_VOTE + news.getId(), NEUTRAL_VOTE);
+            return mSharedPrefs.getString(USER_FACTOPINION_VOTE + news.getId(), NEUTRAL_VOTE);
+        }
+    }
+
+    public static void setUserTradeVoteRef(News news, String userVote) {
+        mSharedPrefs.edit().putString(USER_TRADE_VOTE + news.getId(), userVote).commit();
+    }
+
+    public static String getUserTradeVoteRef(News news, boolean canBeNull) {
+        if (canBeNull == true) {
+            return mSharedPrefs.getString(USER_TRADE_VOTE + news.getId(), null);
+        } else {
+            return mSharedPrefs.getString(USER_TRADE_VOTE + news.getId(), NEUTRAL_VOTE);
         }
     }
 

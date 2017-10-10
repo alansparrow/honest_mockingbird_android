@@ -24,6 +24,34 @@ import java.net.URL;
 public class NetworkRequester {
     private static final String TAG = "NetworkRequester";
 
+    public void voteFact(News news) {
+        try {
+            String url = Uri.parse("http://192.241.147.78:8000/news/vote/fact")
+                    .buildUpon()
+                    .build().toString();
+            String data = "user_token=" + SharedInfo.getUserToken() + "&news_id=" + news.getId();
+
+            String jsonString = getUrlString(url, "POST", data);
+            Log.i(TAG, "Result: " + jsonString);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to fetch items", e);
+        }
+    }
+
+    public void voteOpinion(News news) {
+        try {
+            String url = Uri.parse("http://192.241.147.78:8000/news/vote/opinion")
+                    .buildUpon()
+                    .build().toString();
+            String data = "user_token=" + SharedInfo.getUserToken() + "&news_id=" + news.getId();
+
+            String jsonString = getUrlString(url, "POST", data);
+            Log.i(TAG, "Result: " + jsonString);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to fetch items", e);
+        }
+    }
+
     public void voteHold(News news) {
         try {
             String url = Uri.parse("http://192.241.147.78:8000/news/vote/hold")

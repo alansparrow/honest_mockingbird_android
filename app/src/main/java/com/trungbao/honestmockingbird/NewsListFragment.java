@@ -8,11 +8,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -20,6 +22,8 @@ import android.widget.TextView;
 import com.trungbao.honestmockingbird.helper.NetworkRequester;
 import com.trungbao.honestmockingbird.model.News;
 import com.trungbao.honestmockingbird.model.NewsLab;
+
+import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -35,6 +39,7 @@ import java.util.TimeZone;
 public class NewsListFragment extends Fragment {
     private static final String TAG = "NewsListFragment";
 
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mNewsRecyclerView;
     private NewsAdapter mAdapter;
 
@@ -44,6 +49,17 @@ public class NewsListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 //        setRetainInstance(true);
+
+        updateNewsList();
+
+        Log.i(TAG, "NewsListFragment created");
+    }
+
+    private void updateNewsList() {
+        // NewsLab refresh to null
+        // mAdapter point to newsList in NewsLab
+        NewsLab.refresh();
+        mAdapter = null;
 
         // from Local Time to UTC
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -59,14 +75,21 @@ public class NewsListFragment extends Fragment {
                 20,
                 0
         );
+    }
 
-        Log.i(TAG, "NewsListFragment created");
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.fragment_news_list, menu);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_news_list, container, false);
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh);
+        mSwipeRefreshLayout.setOnRefreshListener(new OnSwipeRefreshListener());
 
         mNewsRecyclerView = (RecyclerView) view.findViewById(R.id.news_recycler_view);
         mNewsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -97,6 +120,7 @@ public class NewsListFragment extends Fragment {
             mAdapter.notifyDataSetChanged();
             Log.i(TAG, "updateUI with mAdapter != null " + mAdapter);
         }
+
 
     }
 
@@ -132,7 +156,6 @@ public class NewsListFragment extends Fragment {
 
     private class NewsHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private News mNews;
-        private String mMyVote;
 
         private TextView mTitleTextView;
         private TextView mPubSourceTextView;
@@ -147,6 +170,13 @@ public class NewsListFragment extends Fragment {
         private View mBuyBtn;
         private View mSellBtn;
 
+        private TextView mFactTextView;
+        private TextView mOpinionTextView;
+        private View mFactBtn;
+        private View mOpinionBtn;
+        private TextView mFactVoteCountTextView;
+        private TextView mOpinionVoteCountTextView;
+
 
         public NewsHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.list_news_item, parent, false));
@@ -155,16 +185,22 @@ public class NewsListFragment extends Fragment {
             mTitleTextView = (TextView) itemView.findViewById(R.id.news_title);
             mPubSourceTextView = (TextView) itemView.findViewById(R.id.news_pub_source);
             mPubTimeTextView = (TextView) itemView.findViewById(R.id.news_pub_time);
-            mHoldTextView = (TextView) itemView.findViewById(R.id.hold_btn);
-            mBuyTextView = (TextView) itemView.findViewById(R.id.buy_btn);
-            mSellTextView = (TextView) itemView.findViewById(R.id.sell_btn);
+            mHoldTextView = (TextView) itemView.findViewById(R.id.hold);
+            mBuyTextView = (TextView) itemView.findViewById(R.id.buy);
+            mSellTextView = (TextView) itemView.findViewById(R.id.sell);
             mHoldVoteCountTextView = (TextView) itemView.findViewById(R.id.hold_vote_count);
             mBuyVoteCountTextView = (TextView) itemView.findViewById(R.id.buy_vote_count);
             mSellVoteCountTextView = (TextView) itemView.findViewById(R.id.sell_vote_count);
-            mHoldBtn = (View) itemView.findViewById(R.id.hold_linear_layout);
-            mBuyBtn = (View) itemView.findViewById(R.id.buy_linear_layout);
-            mSellBtn = (View) itemView.findViewById(R.id.sell_linear_layout);
+            mHoldBtn = (View) itemView.findViewById(R.id.hold_linear_layout_btn);
+            mBuyBtn = (View) itemView.findViewById(R.id.buy_linear_layout_btn);
+            mSellBtn = (View) itemView.findViewById(R.id.sell_linear_layout_btn);
 
+            mFactTextView = (TextView) itemView.findViewById(R.id.fact);
+            mOpinionTextView = (TextView) itemView.findViewById(R.id.opinion);
+            mFactVoteCountTextView = (TextView) itemView.findViewById(R.id.fact_vote_count);
+            mOpinionVoteCountTextView = (TextView) itemView.findViewById(R.id.opinion_vote_count);
+            mFactBtn = (View) itemView.findViewById(R.id.fact_linear_layout_btn);
+            mOpinionBtn = (View) itemView.findViewById(R.id.opinion_linear_layout_btn);
 
         }
 
@@ -175,17 +211,19 @@ public class NewsListFragment extends Fragment {
             mPubSourceTextView.setText(mNews.getPubSource());
             mPubTimeTextView.setText(mNews.getPubDate().toString());
 
-            // Set vote button, should refactor (create sub class of view)
+            // Set voteTrade button, should refactor (create sub class of view)
             mHoldTextView.setTypeface(null, Typeface.NORMAL);
             mSellTextView.setTypeface(null, Typeface.NORMAL);
             mBuyTextView.setTypeface(null, Typeface.NORMAL);
+            mFactTextView.setTypeface(null, Typeface.NORMAL);
+            mOpinionTextView.setTypeface(null, Typeface.NORMAL);
 
             // Only show when user voted
-            if (mNews.getMyVote() != null) {
+            if (mNews.getTradeVote() != null) {
                 mHoldVoteCountTextView.setText(mNews.getHoldVoteCount() + "");
                 mBuyVoteCountTextView.setText(mNews.getBuyVoteCount() + "");
                 mSellVoteCountTextView.setText(mNews.getSellVoteCount() + "");
-                switch (mNews.getMyVote()) {
+                switch (mNews.getTradeVote()) {
                     case SharedInfo.HOLD_VOTE:
                         mHoldTextView.setTypeface(null, Typeface.BOLD);
                         break;
@@ -204,13 +242,61 @@ public class NewsListFragment extends Fragment {
                 mSellVoteCountTextView.setText("?");
             }
 
+            // Only show when user voted
+            if (mNews.getFactOpinionVote() != null) {
+                mFactVoteCountTextView.setText(mNews.getFactVoteCount() + "");
+                mOpinionVoteCountTextView.setText(mNews.getOpinionVoteCount() + "");
+                switch (mNews.getFactOpinionVote()) {
+                    case SharedInfo.FACT_VOTE:
+                        mFactTextView.setTypeface(null, Typeface.BOLD);
+                        break;
+                    case SharedInfo.OPINION_VOTE:
+                        mOpinionTextView.setTypeface(null, Typeface.BOLD);
+                        break;
+                    case SharedInfo.NEUTRAL_VOTE:
+                        break;
+                }
+            } else {
+                mFactVoteCountTextView.setText("?");
+                mOpinionVoteCountTextView.setText("?");
+            }
+
+
             mTitleTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent i = new Intent(Intent.ACTION_VIEW);
                     i.setData(Uri.parse(mNews.getUrl()));
-                    i = Intent.createChooser(i, getString(R.string.open_url));
+//                    i = Intent.createChooser(i, getString(R.string.open_url));
                     startActivity(i);
+                }
+            });
+
+            mFactBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    new VoteTask().execute(mNews, SharedInfo.FACT_VOTE);
+                    if (mNews.getFactOpinionVote()!= null && mNews.getFactOpinionVote().equals(SharedInfo.FACT_VOTE)) {
+                        mNews.voteFactOpinion(SharedInfo.NEUTRAL_VOTE);
+                    } else {
+                        mNews.voteFactOpinion(SharedInfo.FACT_VOTE);
+                    }
+                    Log.i(TAG, "Vote changed: " + mNews.getId() + "   " + mNews.getFactOpinionVote());
+                    updateUI();
+                }
+            });
+
+            mOpinionBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    new VoteTask().execute(mNews, SharedInfo.OPINION_VOTE);
+                    if (mNews.getFactOpinionVote()!= null && mNews.getFactOpinionVote().equals(SharedInfo.OPINION_VOTE)) {
+                        mNews.voteFactOpinion(SharedInfo.NEUTRAL_VOTE);
+                    } else {
+                        mNews.voteFactOpinion(SharedInfo.OPINION_VOTE);
+                    }
+                    Log.i(TAG, "Vote changed: " + mNews.getId() + "   " + mNews.getFactOpinionVote());
+                    updateUI();
                 }
             });
 
@@ -218,12 +304,12 @@ public class NewsListFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     new VoteTask().execute(mNews, SharedInfo.HOLD_VOTE);
-                    if (mNews.getMyVote()!= null && mNews.getMyVote().equals(SharedInfo.HOLD_VOTE)) {
-                        mNews.vote(SharedInfo.NEUTRAL_VOTE);
+                    if (mNews.getTradeVote()!= null && mNews.getTradeVote().equals(SharedInfo.HOLD_VOTE)) {
+                        mNews.voteTrade(SharedInfo.NEUTRAL_VOTE);
                     } else {
-                        mNews.vote(SharedInfo.HOLD_VOTE);
+                        mNews.voteTrade(SharedInfo.HOLD_VOTE);
                     }
-                    Log.i(TAG, "Vote changed: " + mNews.getId() + "   " + mNews.getMyVote());
+                    Log.i(TAG, "Vote changed: " + mNews.getId() + "   " + mNews.getTradeVote());
                     updateUI();
                 }
             });
@@ -232,12 +318,12 @@ public class NewsListFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     new VoteTask().execute(mNews, SharedInfo.BUY_VOTE);
-                    if (mNews.getMyVote()!= null && mNews.getMyVote().equals(SharedInfo.BUY_VOTE)) {
-                        mNews.vote(SharedInfo.NEUTRAL_VOTE);
+                    if (mNews.getTradeVote()!= null && mNews.getTradeVote().equals(SharedInfo.BUY_VOTE)) {
+                        mNews.voteTrade(SharedInfo.NEUTRAL_VOTE);
                     } else {
-                        mNews.vote(SharedInfo.BUY_VOTE);
+                        mNews.voteTrade(SharedInfo.BUY_VOTE);
                     }
-                    Log.i(TAG, "Vote changed: " + mNews.getId() + "   " + mNews.getMyVote());
+                    Log.i(TAG, "Vote changed: " + mNews.getId() + "   " + mNews.getTradeVote());
                     updateUI();
                 }
             });
@@ -246,12 +332,12 @@ public class NewsListFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     new VoteTask().execute(mNews, SharedInfo.SELL_VOTE);
-                    if (mNews.getMyVote()!= null && mNews.getMyVote().equals(SharedInfo.SELL_VOTE)) {
-                        mNews.vote(SharedInfo.NEUTRAL_VOTE);
+                    if (mNews.getTradeVote()!= null && mNews.getTradeVote().equals(SharedInfo.SELL_VOTE)) {
+                        mNews.voteTrade(SharedInfo.NEUTRAL_VOTE);
                     } else {
-                        mNews.vote(SharedInfo.SELL_VOTE);
+                        mNews.voteTrade(SharedInfo.SELL_VOTE);
                     }
-                    Log.i(TAG, "Vote changed: " + mNews.getId() + "   " + mNews.getMyVote());
+                    Log.i(TAG, "Vote changed: " + mNews.getId() + "   " + mNews.getTradeVote());
                     updateUI();
                 }
             });
@@ -260,6 +346,14 @@ public class NewsListFragment extends Fragment {
         @Override
         public void onClick(View view) {
 
+        }
+    }
+
+    private class OnSwipeRefreshListener implements SwipeRefreshLayout.OnRefreshListener {
+
+        @Override
+        public void onRefresh() {
+            updateNewsList();
         }
     }
 
@@ -298,8 +392,8 @@ public class NewsListFragment extends Fragment {
 //                        0
 //                );
             }
-            Log.i(TAG, dx + "   " + dy + " aa  " + recyclerView.canScrollVertically(1));
-            Log.i(TAG, dx + "   " + dy + " bb  " + recyclerView.canScrollVertically(-1));
+//            Log.i(TAG, dx + "   " + dy + " aa  " + recyclerView.canScrollVertically(1));
+//            Log.i(TAG, dx + "   " + dy + " bb  " + recyclerView.canScrollVertically(-1));
         }
     }
 
@@ -310,6 +404,12 @@ public class NewsListFragment extends Fragment {
             News news = (News) objects[0];
             String voteType = (String) objects[1];
             switch (voteType) {
+                case SharedInfo.FACT_VOTE:
+                    new NetworkRequester().voteFact(news);
+                    break;
+                case SharedInfo.OPINION_VOTE:
+                    new NetworkRequester().voteOpinion(news);
+                    break;
                 case SharedInfo.HOLD_VOTE:
                     new NetworkRequester().voteHold(news);
                     break;
@@ -342,6 +442,7 @@ public class NewsListFragment extends Fragment {
         @Override
         protected void onPostExecute(Integer resultType) {
             updateUI();
+            mSwipeRefreshLayout.setRefreshing(false);
         }
     }
 }
