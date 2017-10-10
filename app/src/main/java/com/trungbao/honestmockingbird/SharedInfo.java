@@ -18,6 +18,7 @@ public class SharedInfo {
     public static final String FACT_VOTE = "FACT";
     public static final String OPINION_VOTE = "OPINION";
     public static final String NEUTRAL_VOTE = "NEUTRAL";
+    public static final int BAD_RESULT = -1;
 
     private static SharedPreferences mSharedPrefs = null;
     private static String mUserToken = null;
