@@ -288,9 +288,7 @@ public class NewsListFragment extends Fragment {
             mTitleTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent i = new Intent(Intent.ACTION_VIEW);
-                    i.setData(Uri.parse(mNews.getUrl()));
-//                    i = Intent.createChooser(i, getString(R.string.open_url));
+                    Intent i = NewsPageActivity.newIntent(getActivity(), mNews);
                     startActivity(i);
                 }
             });

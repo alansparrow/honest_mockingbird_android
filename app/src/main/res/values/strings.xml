@@ -7,4 +7,5 @@
     <string name="fact">Fact</string>
     <string name="opinion">Opinion</string>
     <string name="menu_refresh">Refresh</string>
+    <string name="open_browser">OPEN BROWSER</string>
 </resources>

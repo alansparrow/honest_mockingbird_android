@@ -2,6 +2,7 @@ package com.trungbao.honestmockingbird.model;
 
 import com.trungbao.honestmockingbird.SharedInfo;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.Random;
@@ -11,7 +12,7 @@ import java.util.UUID;
  * Created by baotrungtn on 9/11/17.
  */
 
-public class News {
+public class News implements Serializable{
     private String mId;
     private String mTitle;
     private String mUrl;
