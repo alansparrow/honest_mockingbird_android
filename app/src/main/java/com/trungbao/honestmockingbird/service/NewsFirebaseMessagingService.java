@@ -1,6 +1,8 @@
 package com.trungbao.honestmockingbird.service;
 
+import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -21,5 +23,12 @@ public class NewsFirebaseMessagingService extends FirebaseMessagingService{
         Log.d(TAG, "From: " + remoteMessage.getFrom());
         Log.d(TAG, "Body: " + remoteMessage.getNotification().getBody());
 
+        Handler h = new Handler(getApplicationContext().getMainLooper());
+        h.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), "News list updated", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }
