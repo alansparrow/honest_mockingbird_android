@@ -2,6 +2,8 @@ package com.trungbao.honestmockingbird;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -18,6 +20,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.trungbao.honestmockingbird.helper.NetworkRequester;
@@ -200,6 +203,10 @@ public class NewsListFragment extends Fragment {
         private TextView mFactVoteCountTextView;
         private TextView mOpinionVoteCountTextView;
 
+        private ImageView mVoteDownBtn;
+        private ImageView mVoteUpBtn;
+        private ImageView mShareBtn;
+
 
         public NewsHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.list_news_item, parent, false));
@@ -225,6 +232,10 @@ public class NewsListFragment extends Fragment {
             mFactBtn = (View) itemView.findViewById(R.id.fact_linear_layout_btn);
             mOpinionBtn = (View) itemView.findViewById(R.id.opinion_linear_layout_btn);
 
+            mVoteUpBtn = (ImageView) itemView.findViewById(R.id.vote_up_btn);
+            mVoteDownBtn = (ImageView) itemView.findViewById(R.id.vote_down_btn);
+            mShareBtn = (ImageView) itemView.findViewById(R.id.share_btn);
+
         }
 
         public void bind(News n) {
@@ -240,6 +251,7 @@ public class NewsListFragment extends Fragment {
             mBuyTextView.setTypeface(null, Typeface.NORMAL);
             mFactTextView.setTypeface(null, Typeface.NORMAL);
             mOpinionTextView.setTypeface(null, Typeface.NORMAL);
+
 
             // Only show when user voted
             if (mNews.getTradeVote() != null) {
@@ -362,12 +374,30 @@ public class NewsListFragment extends Fragment {
                     updateUI();
                 }
             });
+
+            mShareBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    i.putExtra(Intent.EXTRA_TEXT, getNewsReport(mNews));
+                    i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.news_subject));
+                    i = Intent.createChooser(i, getString(R.string.share_option));
+                    startActivity(i);
+                }
+            });
         }
 
         @Override
         public void onClick(View view) {
 
         }
+    }
+
+    private String getNewsReport(News news) {
+        String newsReport = "";
+        newsReport = getString(R.string.news_report, news.getTitle(), news.getUrl());
+        return newsReport;
     }
 
     private class OnSwipeRefreshListener implements SwipeRefreshLayout.OnRefreshListener {

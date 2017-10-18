@@ -8,4 +8,11 @@
     <string name="opinion">Opinion</string>
     <string name="menu_refresh">Refresh</string>
     <string name="open_browser">OPEN BROWSER</string>
+    <string name="share_btn">Share</string>
+    <string name="news_subject">News Report</string>
+    <string name="share_option">Share this news via </string>
+    <string name="news_report">%1$s
+    source: %2$s
+    collected by Honest Mockingbird
+    </string>
 </resources>

@@ -18,7 +18,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textColor="@android:color/black"
-        android:textSize="20sp"
+        android:textSize="20dp"
 
         android:layout_marginStart="8dp"
         app:layout_constraintTop_toTopOf="parent"
@@ -50,8 +50,34 @@
         app:layout_constraintLeft_toLeftOf="parent"/>
 
 
+
+    <LinearLayout
+        android:id="@+id/share_linear_layout_btn"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/news_title"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginEnd="8dp">
+        <ImageView
+            android:id="@+id/share_btn"
+            android:src="@drawable/share"
+            android:tint="@android:color/darker_gray"
+            android:layout_width="30dp"
+            android:layout_height="30dp"/>
+    </LinearLayout>
+
+
+
+
+
+
+
     <android.support.constraint.ConstraintLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -99,7 +125,7 @@
             android:layout_marginTop="8dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/vote_divider1"
-            android:layout_marginRight="16dp">
+            android:layout_marginEnd="16dp">
             <TextView
                 android:id="@+id/fact_vote_count"
                 android:gravity="center"
@@ -122,15 +148,13 @@
         <View
             android:id="@+id/vote_divider1"
             android:layout_width="1dp"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/buy_linear_layout_btn"
             android:background="@android:color/darker_gray"
-            tools:layout_editor_absoluteX="262dp"
-            android:layout_marginRight="16dp"
             android:layout_marginTop="8dp"
-            />
+            android:layout_marginEnd="16dp"/>
 
 
 
@@ -143,8 +167,7 @@
             android:layout_marginTop="8dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/sell_linear_layout_btn"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp">
+            android:layout_marginEnd="8dp">
             <TextView
                 android:id="@+id/buy_vote_count"
                 android:gravity="center"
@@ -172,7 +195,8 @@
             android:layout_marginTop="8dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/hold_linear_layout_btn"
-            android:layout_marginRight="8dp">
+            android:layout_marginRight="8dp"
+            android:layout_marginEnd="8dp">
             <TextView
                 android:id="@+id/sell_vote_count"
                 android:gravity="center"
@@ -199,8 +223,8 @@
             android:orientation="vertical"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="8dp"
-            app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginRight="8dp">
+            app:layout_constraintRight_toLeftOf="@+id/vote_divider2"
+            android:layout_marginEnd="16dp">
 
             <TextView
                 android:id="@+id/hold_vote_count"
@@ -220,6 +244,48 @@
                 android:text="@string/hold"/>
 
         </LinearLayout>
+
+        <View
+            android:id="@+id/vote_divider2"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/updown_vote_linear_layout"
+            android:background="@android:color/darker_gray"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"/>
+
+        <LinearLayout
+            android:id="@+id/updown_vote_linear_layout"
+            android:gravity="center"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintRight_toRightOf="parent"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent">
+            <ImageView
+                android:id="@+id/vote_up_btn"
+                android:src="@drawable/up_arrow"
+                android:layout_marginEnd="8dp"
+                android:layout_width="23dp"
+                android:layout_height="23dp"/>
+
+            <ImageView
+                android:id="@+id/vote_down_btn"
+                android:src="@drawable/down_arrow"
+                android:layout_marginEnd="8dp"
+                android:layout_width="23dp"
+                android:layout_height="23dp"/>
+        </LinearLayout>
+
+
+
+
     </android.support.constraint.ConstraintLayout>
 
 
