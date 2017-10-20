@@ -94,6 +94,34 @@ public class NetworkRequester {
         }
     }
 
+    public void voteUp(News news) {
+        try {
+            String url = Uri.parse("http://192.241.147.78:8000/news/vote/up")
+                    .buildUpon()
+                    .build().toString();
+            String data = "user_token=" + SharedInfo.getUserToken() + "&news_id=" + news.getId();
+
+            String jsonString = getUrlString(url, "POST", data);
+            Log.i(TAG, "Result: " + jsonString);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to fetch items", e);
+        }
+    }
+
+    public void voteDown(News news) {
+        try {
+            String url = Uri.parse("http://192.241.147.78:8000/news/vote/down")
+                    .buildUpon()
+                    .build().toString();
+            String data = "user_token=" + SharedInfo.getUserToken() + "&news_id=" + news.getId();
+
+            String jsonString = getUrlString(url, "POST", data);
+            Log.i(TAG, "Result: " + jsonString);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to fetch items", e);
+        }
+    }
+
     public String getNewUserToken() {
         String result = null;
 

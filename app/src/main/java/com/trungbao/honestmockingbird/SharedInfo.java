@@ -4,6 +4,8 @@ import android.content.SharedPreferences;
 
 import com.trungbao.honestmockingbird.model.News;
 
+import java.net.URL;
+
 /**
  * Created by baotrungtn on 9/27/17.
  */
@@ -12,10 +14,13 @@ public class SharedInfo {
     public static final String USER_TOKEN = "USER_TOKEN";
     public static final String USER_TRADE_VOTE = "USER_TRADE_VOTE";
     public static final String USER_FACTOPINION_VOTE = "USER_FACTOPINION_VOTE";
+    public static final String USER_UPDOWN_VOTE = "USER_UPDOWN_VOTE";
     public static final String HOLD_VOTE = "HOLD";
     public static final String BUY_VOTE = "BUY";
     public static final String SELL_VOTE = "SELL";
     public static final String FACT_VOTE = "FACT";
+    public static final String UP_VOTE = "UP";
+    public static final String DOWN_VOTE = "DOWN";
     public static final String OPINION_VOTE = "OPINION";
     public static final String NEUTRAL_VOTE = "NEUTRAL";
     public static final int BAD_RESULT = -1;
@@ -55,6 +60,18 @@ public class SharedInfo {
         }
     }
 
+    public static void setUserUpDownVoteRef(News news, String userVote) {
+        mSharedPrefs.edit().putString(USER_UPDOWN_VOTE + news.getId(), userVote).commit();
+    }
+
+    public static String getUserUpDownVoteRef(News news, boolean canBeNull) {
+        if (canBeNull == true) {
+            return mSharedPrefs.getString(USER_UPDOWN_VOTE + news.getId(), null);
+        } else {
+            return mSharedPrefs.getString(USER_UPDOWN_VOTE + news.getId(), NEUTRAL_VOTE);
+        }
+    }
+
     public static String getUserToken() {
         String result = null;
 
@@ -69,5 +86,34 @@ public class SharedInfo {
         if (mSharedPrefs != null) {
             mSharedPrefs.edit().putString(USER_TOKEN, mUserToken).commit();
         }
+    }
+
+    public static String formatNumberStringWithSuffix(long count) {
+        if (count < 1000 && count > -1000) return "" + count;
+
+        if (count <= -1000) {
+            count *= -1;
+            int exp = (int) (Math.log(count) / Math.log(1000));
+            return String.format("%.1f%c",
+                    -1 * count / Math.pow(1000, exp),
+                    "kMGTPE".charAt(exp-1));
+        }
+
+        int exp = (int) (Math.log(count) / Math.log(1000));
+        return String.format("%.1f%c",
+                count / Math.pow(1000, exp),
+                "kMGTPE".charAt(exp-1));
+    }
+
+    public static String getDomainNameFromUrl(String urlStr) {
+        String result = "";
+        try{
+            URL url = new URL(urlStr);
+            result = url.getHost();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 }

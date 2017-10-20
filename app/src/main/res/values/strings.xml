@@ -15,4 +15,6 @@
     source: %2$s
     collected by Honest Mockingbird
     </string>
+    <string name="number_tmp">1234</string>
+    <string name="question_mark">\?</string>
 </resources>

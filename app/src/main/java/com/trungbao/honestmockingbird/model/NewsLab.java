@@ -139,6 +139,9 @@ public class NewsLab {
                 news.setFactVoteCount(itemJsonObject.getInt("fact_vote_count"));
                 news.setOpinionVoteCount(itemJsonObject.getInt("opinion_vote_count"));
                 news.setFactOpinionVote(SharedInfo.getUserFactopinionVoteRef(news, true));
+                news.setUpVoteCount(itemJsonObject.getInt("up_vote_count"));
+                news.setDownVoteCount(itemJsonObject.getInt("down_vote_count"));
+                news.setUpDownVote(SharedInfo.getUserUpDownVoteRef(news, true));
 
                 items.add(news);
             }

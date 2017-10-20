@@ -270,13 +270,21 @@
             app:layout_constraintBottom_toBottomOf="parent">
             <ImageView
                 android:id="@+id/vote_up_btn"
+                android:tint="@android:color/darker_gray"
                 android:src="@drawable/up_arrow"
                 android:layout_marginEnd="8dp"
                 android:layout_width="23dp"
                 android:layout_height="23dp"/>
+            <TextView
+                android:id="@+id/updown_count_textview"
+                android:text="@string/question_mark"
+                android:layout_marginEnd="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"/>
 
             <ImageView
                 android:id="@+id/vote_down_btn"
+                android:tint="@android:color/darker_gray"
                 android:src="@drawable/down_arrow"
                 android:layout_marginEnd="8dp"
                 android:layout_width="23dp"

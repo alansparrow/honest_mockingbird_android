@@ -24,12 +24,15 @@ public class News implements Serializable{
     private int mHoldVoteCount;
     private int mFactVoteCount;
     private int mOpinionVoteCount;
+    private int mUpVoteCount;
+    private int mDownVoteCount;
     private String mTradeVote;
     private String mFactOpinionVote;
+    private String mUpDownVote;
 
     public News(String title, String url, Date pubDate, String pubSource, String fingerprint,
                 int buyVoteCount, int sellVoteCount, int holdVoteCount,
-                int factVoteCount, int opinionVoteCount) {
+                int factVoteCount, int opinionVoteCount, int upVoteCount, int downVoteCount) {
         mId = UUID.randomUUID().toString();
         mTitle = title;
         mUrl = url;
@@ -41,8 +44,11 @@ public class News implements Serializable{
         mHoldVoteCount = holdVoteCount;
         mFactVoteCount = factVoteCount;
         mOpinionVoteCount = opinionVoteCount;
+        mUpVoteCount = upVoteCount;
+        mDownVoteCount = downVoteCount;
         mTradeVote = SharedInfo.NEUTRAL_VOTE;
         mFactOpinionVote = SharedInfo.NEUTRAL_VOTE;
+        mUpDownVote = SharedInfo.NEUTRAL_VOTE;
     }
 
     public News() {
@@ -57,6 +63,11 @@ public class News implements Serializable{
         mHoldVoteCount = new Random().nextInt(1000);
         mFactVoteCount = new Random().nextInt(1000);
         mOpinionVoteCount = new Random().nextInt(1000);
+        mUpVoteCount = new Random().nextInt(1000);
+        mDownVoteCount = new Random().nextInt(1000);
+        mTradeVote = SharedInfo.NEUTRAL_VOTE;
+        mFactOpinionVote = SharedInfo.NEUTRAL_VOTE;
+        mUpDownVote = SharedInfo.NEUTRAL_VOTE;
     }
 
     public String getId() {
@@ -145,6 +156,30 @@ public class News implements Serializable{
 
     public void setOpinionVoteCount(int opinionVoteCount) {
         mOpinionVoteCount = opinionVoteCount;
+    }
+
+    public int getUpVoteCount() {
+        return mUpVoteCount;
+    }
+
+    public void setUpVoteCount(int upVoteCount) {
+        mUpVoteCount = upVoteCount;
+    }
+
+    public int getDownVoteCount() {
+        return mDownVoteCount;
+    }
+
+    public void setDownVoteCount(int downVoteCount) {
+        mDownVoteCount = downVoteCount;
+    }
+
+    public String getUpDownVote() {
+        return mUpDownVote;
+    }
+
+    public void setUpDownVote(String upDownVote) {
+        mUpDownVote = upDownVote;
     }
 
     public String getFactOpinionVote() {
@@ -315,6 +350,67 @@ public class News implements Serializable{
 
         mTradeVote = myVote;
         SharedInfo.setUserTradeVoteRef(this, myVote);
+    }
+
+    public void voteUpDown(String myVote) {
+        if (mUpDownVote == null && myVote != null) {
+            switch (myVote) {
+                case SharedInfo.UP_VOTE:
+                    mUpVoteCount += 1;
+                    break;
+                case SharedInfo.DOWN_VOTE:
+                    mDownVoteCount += 1;
+                    break;
+            }
+        } else if (mUpDownVote != null && myVote != null) {
+            switch (mUpDownVote) {
+                case SharedInfo.NEUTRAL_VOTE:
+                    switch (myVote) {
+                        case SharedInfo.NEUTRAL_VOTE:
+                            break;
+                        case SharedInfo.UP_VOTE:
+                            mUpVoteCount += 1;
+                            break;
+                        case SharedInfo.DOWN_VOTE:
+                            mDownVoteCount += 1;
+                            break;
+
+                    }
+                    break;
+                case SharedInfo.UP_VOTE:
+                    switch (myVote) {
+                        case SharedInfo.NEUTRAL_VOTE:
+                            mUpVoteCount -= 1;
+                            break;
+                        case SharedInfo.UP_VOTE:  // refactoring here -1
+                            break;
+                        case SharedInfo.DOWN_VOTE:
+                            mUpVoteCount -= 1;
+                            mDownVoteCount += 1;
+                            break;
+                    }
+                    break;
+                case SharedInfo.DOWN_VOTE:
+                    switch (myVote) {
+                        case SharedInfo.NEUTRAL_VOTE:
+                            mDownVoteCount -= 1;
+                            break;
+                        case SharedInfo.DOWN_VOTE:  // refactoring here -1
+                            break;
+                        case SharedInfo.UP_VOTE:
+                            mDownVoteCount -= 1;
+                            mUpVoteCount += 1;
+                            break;
+                    }
+                    break;
+            }
+        }
+
+        mUpVoteCount = (mUpVoteCount < 0) ? 0 : mUpVoteCount;
+        mDownVoteCount = (mDownVoteCount < 0) ? 0 : mDownVoteCount;
+
+        mUpDownVote = myVote;
+        SharedInfo.setUserUpDownVoteRef(this, myVote);
     }
 
     @Override
