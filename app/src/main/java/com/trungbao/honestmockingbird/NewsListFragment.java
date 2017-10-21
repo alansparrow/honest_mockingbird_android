@@ -2,10 +2,7 @@ package com.trungbao.honestmockingbird;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -27,8 +24,6 @@ import com.trungbao.honestmockingbird.helper.NetworkRequester;
 import com.trungbao.honestmockingbird.model.News;
 import com.trungbao.honestmockingbird.model.NewsLab;
 
-import org.w3c.dom.Text;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -47,6 +42,10 @@ public class NewsListFragment extends Fragment {
     private RecyclerView mNewsRecyclerView;
     private NewsAdapter mAdapter;
 
+    public static NewsListFragment newInstance() {
+        NewsListFragment fragment = new NewsListFragment();
+        return fragment;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,7 +53,7 @@ public class NewsListFragment extends Fragment {
         setHasOptionsMenu(true);
 //        setRetainInstance(true);
 
-        updateNewsList();
+        refreshNewsList();
 
         Log.i(TAG, "NewsListFragment created");
     }
@@ -72,7 +71,7 @@ public class NewsListFragment extends Fragment {
 
                 // Start the refresh background task.
                 // This method calls setRefreshing(false) when it's finished.
-                updateNewsList();
+                refreshNewsList();
 
                 return true;
         }
@@ -81,7 +80,7 @@ public class NewsListFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private void updateNewsList() {
+    private void refreshNewsList() {
         // NewsLab refresh to null
         // mAdapter point to newsList in NewsLab
         NewsLab.refresh();
@@ -463,7 +462,7 @@ public class NewsListFragment extends Fragment {
 
         @Override
         public void onRefresh() {
-            updateNewsList();
+            refreshNewsList();
         }
     }
 

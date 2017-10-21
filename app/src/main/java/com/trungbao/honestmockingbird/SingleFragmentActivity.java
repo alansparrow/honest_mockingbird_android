@@ -30,15 +30,17 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
 
         // Only run once
         if (SharedInfo.getUserToken() == null) {
-            new GetNewUserTokenTask().execute();
+            SharedInfo.setupUserToken();
         } else {
             Log.i(TAG, "retrieve user token: " + SharedInfo.getUserToken());
         }
 
-        setContentView(R.layout.activity_fragment);
-
         // Register firebase notification service (news topic)
         FirebaseMessaging.getInstance().subscribeToTopic("news");
+
+        setContentView(R.layout.activity_fragment);
+
+
 
         FragmentManager fm = getSupportFragmentManager();
         Fragment fragment = fm.findFragmentById(R.id.fragment_container);
@@ -49,21 +51,6 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
                     .add(R.id.fragment_container, fragment)
                     .commit();
             Log.i(TAG, "SingleFragmentActivity run commit fragment");
-        }
-    }
-
-    private class GetNewUserTokenTask extends AsyncTask<Void,Void, String> {
-
-        @Override
-        protected String doInBackground(Void... voids) {
-            return new NetworkRequester().getNewUserToken();
-        }
-
-        @Override
-        protected void onPostExecute(String userToken) {
-            super.onPostExecute(userToken);
-            SharedInfo.setUserToken(userToken);
-            Log.i(TAG, "GetNewUserTokenTask: get new user token: " + userToken);
         }
     }
 }

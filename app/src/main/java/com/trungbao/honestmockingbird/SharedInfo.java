@@ -1,7 +1,10 @@
 package com.trungbao.honestmockingbird;
 
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
+import android.util.Log;
 
+import com.trungbao.honestmockingbird.helper.NetworkRequester;
 import com.trungbao.honestmockingbird.model.News;
 
 import java.net.URL;
@@ -11,6 +14,7 @@ import java.net.URL;
  */
 
 public class SharedInfo {
+    public static final String TAG = "SharedInfo";
     public static final String USER_TOKEN = "USER_TOKEN";
     public static final String USER_TRADE_VOTE = "USER_TRADE_VOTE";
     public static final String USER_FACTOPINION_VOTE = "USER_FACTOPINION_VOTE";
@@ -115,5 +119,30 @@ public class SharedInfo {
         }
 
         return result;
+    }
+
+    public static void setupUserToken() {
+        // Only run once
+        if (SharedInfo.getUserToken() == null) {
+            new UserTokenTask().execute();
+        } else {
+            Log.i(TAG, "retrieve user token: " + SharedInfo.getUserToken());
+        }
+    }
+
+
+    private static class UserTokenTask extends AsyncTask<Void,Void, String> {
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            return new NetworkRequester().getNewUserToken();
+        }
+
+        @Override
+        protected void onPostExecute(String userToken) {
+            super.onPostExecute(userToken);
+            SharedInfo.setUserToken(userToken);
+            Log.i(TAG, "GetNewUserTokenTask: get new user token: " + userToken);
+        }
     }
 }
