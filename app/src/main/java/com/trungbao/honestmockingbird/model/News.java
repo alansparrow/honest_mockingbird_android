@@ -29,10 +29,11 @@ public class News implements Serializable{
     private String mTradeVote;
     private String mFactOpinionVote;
     private String mUpDownVote;
+    private double mScore;
 
     public News(String title, String url, Date pubDate, String pubSource, String fingerprint,
                 int buyVoteCount, int sellVoteCount, int holdVoteCount,
-                int factVoteCount, int opinionVoteCount, int upVoteCount, int downVoteCount) {
+                int factVoteCount, int opinionVoteCount, int upVoteCount, int downVoteCount, float score) {
         mId = UUID.randomUUID().toString();
         mTitle = title;
         mUrl = url;
@@ -46,6 +47,7 @@ public class News implements Serializable{
         mOpinionVoteCount = opinionVoteCount;
         mUpVoteCount = upVoteCount;
         mDownVoteCount = downVoteCount;
+        mScore = score;
         mTradeVote = SharedInfo.NEUTRAL_VOTE;
         mFactOpinionVote = SharedInfo.NEUTRAL_VOTE;
         mUpDownVote = SharedInfo.NEUTRAL_VOTE;
@@ -65,6 +67,7 @@ public class News implements Serializable{
         mOpinionVoteCount = new Random().nextInt(1000);
         mUpVoteCount = new Random().nextInt(1000);
         mDownVoteCount = new Random().nextInt(1000);
+        mScore = new Random().nextDouble();
         mTradeVote = SharedInfo.NEUTRAL_VOTE;
         mFactOpinionVote = SharedInfo.NEUTRAL_VOTE;
         mUpDownVote = SharedInfo.NEUTRAL_VOTE;
@@ -196,6 +199,14 @@ public class News implements Serializable{
 
     public void setTradeVote(String tradeVote) {
         mTradeVote = tradeVote;
+    }
+
+    public double getScore() {
+        return mScore;
+    }
+
+    public void setScore(double score) {
+        mScore = score;
     }
 
     public void voteFactOpinion(String myVote) {

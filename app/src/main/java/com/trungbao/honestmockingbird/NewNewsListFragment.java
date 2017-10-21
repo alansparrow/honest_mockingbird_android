@@ -21,8 +21,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.trungbao.honestmockingbird.helper.NetworkRequester;
+import com.trungbao.honestmockingbird.model.NewNewsLab;
 import com.trungbao.honestmockingbird.model.News;
-import com.trungbao.honestmockingbird.model.NewsLab;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -35,15 +35,15 @@ import java.util.TimeZone;
  */
 
 
-public class NewsListFragment extends Fragment {
-    private static final String TAG = "NewsListFragment";
+public class NewNewsListFragment extends Fragment {
+    private static final String TAG = "NewNewsListFragment";
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mNewsRecyclerView;
     private NewsAdapter mAdapter;
 
-    public static NewsListFragment newInstance() {
-        NewsListFragment fragment = new NewsListFragment();
+    public static NewNewsListFragment newInstance() {
+        NewNewsListFragment fragment = new NewNewsListFragment();
         return fragment;
     }
 
@@ -55,7 +55,7 @@ public class NewsListFragment extends Fragment {
 
         refreshNewsList();
 
-        Log.i(TAG, "NewsListFragment created");
+        Log.i(TAG, "NewNewsListFragment created");
     }
 
     @Override
@@ -81,9 +81,9 @@ public class NewsListFragment extends Fragment {
     }
 
     private void refreshNewsList() {
-        // NewsLab refresh to null
-        // mAdapter point to newsList in NewsLab
-        NewsLab.refresh();
+        // NewNewsLab refresh to null
+        // mAdapter point to newsList in NewNewsLab
+        NewNewsLab.refresh();
         mAdapter = null;
 
         // from Local Time to UTC
@@ -122,7 +122,7 @@ public class NewsListFragment extends Fragment {
 
         updateUI();
 
-        Log.i(TAG, "NewsListFragment View created");
+        Log.i(TAG, "NewNewsListFragment View created");
 
         return view;
     }
@@ -134,7 +134,7 @@ public class NewsListFragment extends Fragment {
     }
 
     private void updateUI() {
-        NewsLab newsLab = NewsLab.get(getActivity());
+        NewNewsLab newsLab = NewNewsLab.get(getActivity());
         List<News> newsList = newsLab.getNewsList();
 
         if (mAdapter == null) {
@@ -471,11 +471,11 @@ public class NewsListFragment extends Fragment {
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             if (!recyclerView.canScrollVertically(1)) {
                 // from Local Time to UTC
-                int lastItemPos = NewsLab.get(getActivity()).getNewsList().size() - 1;
+                int lastItemPos = NewNewsLab.get(getActivity()).getNewsList().size() - 1;
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
                 String beforeDateStr = sdf.format(
-                        NewsLab.get(getContext()).getNewsList().get(lastItemPos).getPubDate()
+                        NewNewsLab.get(getContext()).getNewsList().get(lastItemPos).getPubDate()
                 );
 
                 new FetchDataTask().execute(
@@ -549,7 +549,7 @@ public class NewsListFragment extends Fragment {
             int newsCount = (int) params[2];
             int resultType = (int) params[3];
 
-            NewsLab.get(context).fetchNews(beforeDateStr, newsCount);
+            NewNewsLab.get(context).fetchNewNews(beforeDateStr, newsCount);
 
             return resultType;
         }

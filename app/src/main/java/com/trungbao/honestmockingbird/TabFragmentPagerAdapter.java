@@ -30,13 +30,13 @@ public class TabFragmentPagerAdapter extends FragmentPagerAdapter {
 
         switch (position) {
             case 0:
-                f = NewsListFragment.newInstance();
+                f = NewNewsListFragment.newInstance();
                 break;
             case 1:
-                f = NewsListFragment.newInstance();
+                f = HotNewsListFragment.newInstance();
                 break;
             default:
-                f = NewsListFragment.newInstance();
+                f = NewNewsListFragment.newInstance();
                 break;
         }
 
