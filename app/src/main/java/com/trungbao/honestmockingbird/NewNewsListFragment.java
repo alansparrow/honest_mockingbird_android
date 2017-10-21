@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.trungbao.honestmockingbird.helper.NetworkRequester;
@@ -41,6 +42,7 @@ public class NewNewsListFragment extends Fragment {
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mNewsRecyclerView;
     private NewsAdapter mAdapter;
+    private ProgressBar mWebLoadingProgressBar;
 
     public static NewNewsListFragment newInstance() {
         NewNewsListFragment fragment = new NewNewsListFragment();
@@ -53,7 +55,7 @@ public class NewNewsListFragment extends Fragment {
         setHasOptionsMenu(true);
 //        setRetainInstance(true);
 
-        refreshNewsList();
+
 
         Log.i(TAG, "NewNewsListFragment created");
     }
@@ -120,7 +122,8 @@ public class NewNewsListFragment extends Fragment {
         mNewsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mNewsRecyclerView.addOnScrollListener(new OnVerticalScrollListener());
 
-        updateUI();
+        mWebLoadingProgressBar = (ProgressBar) view.findViewById(R.id.webLoadingProgressBar);
+        mWebLoadingProgressBar.setVisibility(View.VISIBLE);
 
         Log.i(TAG, "NewNewsListFragment View created");
 
@@ -128,9 +131,15 @@ public class NewNewsListFragment extends Fragment {
     }
 
     @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        refreshNewsList();
+    }
+
+
+    @Override
     public void onResume() {
         super.onResume();
-        updateUI();
     }
 
     private void updateUI() {
@@ -146,7 +155,9 @@ public class NewNewsListFragment extends Fragment {
             Log.i(TAG, "updateUI with mAdapter != null " + mAdapter);
         }
 
-
+        // VISIBLE at the beginning, at the start of fetch edge
+        // GONE at the end of updateUI
+        mWebLoadingProgressBar.setVisibility(View.GONE);
     }
 
     private class NewsAdapter extends RecyclerView.Adapter<NewsHolder>{
@@ -208,6 +219,8 @@ public class NewNewsListFragment extends Fragment {
         private TextView mUpDownTextView;
 
 
+
+
         public NewsHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.list_news_item, parent, false));
             itemView.setOnClickListener(this);
@@ -236,6 +249,7 @@ public class NewNewsListFragment extends Fragment {
             mVoteDownBtn = (ImageView) itemView.findViewById(R.id.vote_down_btn);
             mShareBtn = (ImageView) itemView.findViewById(R.id.share_btn);
             mUpDownTextView = (TextView) itemView.findViewById(R.id.updown_count_textview);
+
 
         }
 
@@ -478,6 +492,10 @@ public class NewNewsListFragment extends Fragment {
                         NewNewsLab.get(getContext()).getNewsList().get(lastItemPos).getPubDate()
                 );
 
+                // VISIBLE at the beginning, at the start of fetch edge
+                // GONE at the end of updateUI
+                mWebLoadingProgressBar.setVisibility(View.VISIBLE);
+
                 new FetchDataTask().execute(
                         getContext(),
                         beforeDateStr,
@@ -486,23 +504,8 @@ public class NewNewsListFragment extends Fragment {
                 );
 
             } else if (!recyclerView.canScrollVertically(-1)) {
-                // from Local Time to UTC
-//                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-//
-//                Calendar c = Calendar.getInstance();
-//                c.setTime(new Date());
-//                c.add(Calendar.DATE, 2);  // number of days to add
-//
-//                new FetchDataTask().execute(
-//                        getContext(),
-//                        sdf.format(c.getTime()),
-//                        20,
-//                        0
-//                );
+
             }
-//            Log.i(TAG, dx + "   " + dy + " aa  " + recyclerView.canScrollVertically(1));
-//            Log.i(TAG, dx + "   " + dy + " bb  " + recyclerView.canScrollVertically(-1));
         }
     }
 

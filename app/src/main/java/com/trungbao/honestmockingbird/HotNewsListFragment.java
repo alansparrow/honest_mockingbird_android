@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.trungbao.honestmockingbird.helper.NetworkRequester;
@@ -36,6 +37,7 @@ public class HotNewsListFragment extends Fragment {
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mNewsRecyclerView;
     private HotNewsListFragment.NewsAdapter mAdapter;
+    private ProgressBar mWebLoadingProgressBar;
 
     public static HotNewsListFragment newInstance() {
         HotNewsListFragment fragment = new HotNewsListFragment();
@@ -109,7 +111,8 @@ public class HotNewsListFragment extends Fragment {
         mNewsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mNewsRecyclerView.addOnScrollListener(new HotNewsListFragment.OnVerticalScrollListener());
 
-        updateUI();
+        mWebLoadingProgressBar = (ProgressBar) view.findViewById(R.id.webLoadingProgressBar);
+        mWebLoadingProgressBar.setVisibility(View.VISIBLE);
 
         Log.i(TAG, "HotNewsListFragment View created");
 
@@ -117,9 +120,14 @@ public class HotNewsListFragment extends Fragment {
     }
 
     @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        refreshNewsList();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
-        updateUI();
     }
 
     private void updateUI() {
@@ -135,7 +143,9 @@ public class HotNewsListFragment extends Fragment {
             Log.i(TAG, "updateUI with mAdapter != null " + mAdapter);
         }
 
-
+        // VISIBLE at the beginning, at the start of fetch edge
+        // GONE at the end of updateUI
+        mWebLoadingProgressBar.setVisibility(View.GONE);
     }
 
     private class NewsAdapter extends RecyclerView.Adapter<HotNewsListFragment.NewsHolder>{
@@ -463,6 +473,10 @@ public class HotNewsListFragment extends Fragment {
                 int lastItemPos = HotNewsLab.get(getActivity()).getNewsList().size() - 1;
                 double score = HotNewsLab.get(getContext()).getNewsList().get(lastItemPos).getScore();
 
+                // VISIBLE at the beginning, at the start of fetch edge
+                // GONE at the end of updateUI
+                mWebLoadingProgressBar.setVisibility(View.VISIBLE);
+
                 new HotNewsListFragment.FetchDataTask().execute(
                         getContext(),
                         score,
@@ -471,23 +485,8 @@ public class HotNewsListFragment extends Fragment {
                 );
 
             } else if (!recyclerView.canScrollVertically(-1)) {
-                // from Local Time to UTC
-//                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-//
-//                Calendar c = Calendar.getInstance();
-//                c.setTime(new Date());
-//                c.add(Calendar.DATE, 2);  // number of days to add
-//
-//                new FetchDataTask().execute(
-//                        getContext(),
-//                        sdf.format(c.getTime()),
-//                        20,
-//                        0
-//                );
+
             }
-//            Log.i(TAG, dx + "   " + dy + " aa  " + recyclerView.canScrollVertically(1));
-//            Log.i(TAG, dx + "   " + dy + " bb  " + recyclerView.canScrollVertically(-1));
         }
     }
 
