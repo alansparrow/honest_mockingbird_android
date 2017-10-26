@@ -11,7 +11,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 public class TabFragmentPagerAdapter extends FragmentPagerAdapter {
     private final int PAGE_COUNT = 2;
-    private String tabTitles[] = new String[] { "Hot", "New" };
+    private String tabTitles[] = new String[] { "New", "Hot" };
     private Context context;
 
     public TabFragmentPagerAdapter(FragmentManager fm, Context context) {
@@ -30,10 +30,10 @@ public class TabFragmentPagerAdapter extends FragmentPagerAdapter {
 
         switch (position) {
             case 0:
-                f = HotNewsListFragment.newInstance();
+                f = NewNewsListFragment.newInstance();
                 break;
             case 1:
-                f = NewNewsListFragment.newInstance();
+                f = HotNewsListFragment.newInstance();
                 break;
             default:
                 f = NewNewsListFragment.newInstance();
