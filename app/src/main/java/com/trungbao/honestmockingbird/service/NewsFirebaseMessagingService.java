@@ -27,7 +27,7 @@ public class NewsFirebaseMessagingService extends FirebaseMessagingService{
         h.post(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(getApplicationContext(), "New news has arrived", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "News has arrived", Toast.LENGTH_SHORT).show();
             }
         });
     }
