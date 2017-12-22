@@ -23,11 +23,14 @@ public class NewsFirebaseMessagingService extends FirebaseMessagingService{
         Log.d(TAG, "From: " + remoteMessage.getFrom());
         Log.d(TAG, "Body: " + remoteMessage.getNotification().getBody());
 
+        final String title = remoteMessage.getNotification().getTitle();
+        final String body = remoteMessage.getNotification().getBody();
+
         Handler h = new Handler(getApplicationContext().getMainLooper());
         h.post(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(getApplicationContext(), "News has arrived", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), title, Toast.LENGTH_SHORT).show();
             }
         });
     }
